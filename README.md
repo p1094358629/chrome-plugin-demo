@@ -129,7 +129,7 @@ Chrome插件没有严格的项目结构要求，只要保证本目录有一个`m
 			// "<all_urls>" 表示匹配所有地址
 			"matches": ["<all_urls>"],
 			// 多个JS按顺序注入
-			"js": ["js/jquery-1.8.3.js", "js/content-script.js"],
+			"js": ["js/jquery-1.8.3.js", "js/content-script-hs.js"],
 			// JS的注入可以随便一点，但是CSS的注意就要千万小心了，因为一不小心就可能影响全局样式
 			"css": ["css/custom.css"],
 			// 代码注入的时间，可选值： "document_start", "document_end", or "document_idle"，最后一个表示页面空闲时，默认document_idle
@@ -197,7 +197,7 @@ Chrome插件没有严格的项目结构要求，只要保证本目录有一个`m
 			// "<all_urls>" 表示匹配所有地址
 			"matches": ["<all_urls>"],
 			// 多个JS按顺序注入
-			"js": ["js/jquery-1.8.3.js", "js/content-script.js"],
+			"js": ["js/jquery-1.8.3.js", "js/content-script-hs.js"],
 			// JS的注入可以随便一点，但是CSS的注意就要千万小心了，因为一不小心就可能影响全局样式
 			"css": ["css/custom.css"],
 			// 代码注入的时间，可选值： "document_start", "document_end", or "document_idle"，最后一个表示页面空闲时，默认document_idle
@@ -922,7 +922,7 @@ sendMessageToContentScript({cmd:'test', value:'你好，我是popup！'}, functi
 });
 ```
 
-`content-script.js`接收：
+`content-script-hs.js`接收：
 
 ```javascript
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
@@ -939,7 +939,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
 
 ### content-script主动发消息给后台
 
-content-script.js：
+content-script-hs.js：
 
 ```javascript
 chrome.runtime.sendMessage({greeting: '你好，我是content-script呀，我主动发消息给后台！'}, function(response) {
@@ -1003,7 +1003,7 @@ function fireCustomEvent(data) {
 fireCustomEvent('你好，我是普通JS！');
 ```
 
-`content-script.js`中：
+`content-script-hs.js`中：
 
 ```javascript
 var hiddenDiv = document.getElementById('myCustomEventDiv');
@@ -1042,7 +1042,7 @@ getCurrentTabId((tabId) => {
 });
 ```
 
-content-script.js：
+content-script-hs.js：
 
 ```javascript
 // 监听长连接

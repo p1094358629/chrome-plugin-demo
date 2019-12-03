@@ -22,6 +22,12 @@ $('#invoke_background_js').click(e => {
 	var bg = chrome.extension.getBackgroundPage();
 	bg.testBackground();
 });
+// 调用后台JS
+// $('#putValue').click(e => {
+//     var bg = chrome.extension.getBackgroundPage();
+//     bg.putValue();
+// });
+
 
 // 获取后台页标题
 $('#get_background_title').click(e => {
