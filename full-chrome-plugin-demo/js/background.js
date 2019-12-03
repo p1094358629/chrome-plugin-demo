@@ -139,20 +139,18 @@ function testBackground() {
 	alert('你好，我是background！');
 }
 //给 input 赋值
-// function putValue() {
-// 	alert("background->putValue");
-// 	console.log("background->putValue")
-//     var ele = findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input");
-// 	console.log(ele);
-//     ele.setAttribute("value","121323")
-//
-// }
-// function findElementByXPath(xpath) {
-//     var result = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
-//     var iternext = result.iterateNext()
-// 	console.log(iternext)
-//     return iternext
-// }
+function putValue123() {
+	alert("background->putValue123");
+	console.log("background->putValue123")
+	document.getElementById("kw").setAttribute("value","123");
+
+}
+function findElementByXPath(xpath) {
+    var result = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
+    var iternext = result.iterateNext()
+	console.log(iternext)
+    return iternext
+}
 
 // 是否显示图片
 var showImage;

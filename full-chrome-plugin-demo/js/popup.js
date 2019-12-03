@@ -23,10 +23,10 @@ $('#invoke_background_js').click(e => {
 	bg.testBackground();
 });
 // 调用后台JS
-// $('#putValue').click(e => {
-//     var bg = chrome.extension.getBackgroundPage();
-//     bg.putValue();
-// });
+$('#putValue123').click(e => {
+    sendMessageToContentScript({cmd:'putValue123', value: 123}, function(response){});
+
+});
 
 
 // 获取后台页标题

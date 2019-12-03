@@ -98,12 +98,27 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
 		ele.innerHTML = `* {font-size: ${request.size}px !important;}`;
 		document.head.appendChild(ele);
 	}
+	else if(request.cmd == 'putValue123'){
+        const event = document.createEvent('HTMLEvents')
+        // alert("background->putValue123");
+        console.log("background->putValue123")
+        // document.getElementById("kw").setAttribute("value","123");
+
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").setAttribute("value","78999")
+
+
+    }
 	else {
 		tip(JSON.stringify(request));
 		sendResponse('我收到你的消息了：'+JSON.stringify(request));
 	}
 });
-
+function findElementByXPath(xpath) {
+    var result = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
+    var iternext = result.iterateNext()
+    console.log(iternext)
+    return iternext
+}
 // 主动发送消息给后台
 // 要演示此功能，请打开控制台主动执行sendMessageToBackground()
 function sendMessageToBackground(message) {
