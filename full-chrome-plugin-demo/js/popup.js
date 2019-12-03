@@ -27,6 +27,11 @@ $('#putValue123').click(e => {
     sendMessageToContentScript({cmd:'putValue123', value: 123}, function(response){});
 
 });
+// 调用后台JS
+$('#autoCall').click(e => {
+    sendMessageToContentScript({cmd:'autoCall', value: 15067111442}, function(response){});
+
+});
 
 
 // 获取后台页标题
