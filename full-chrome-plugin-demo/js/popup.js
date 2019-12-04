@@ -23,16 +23,21 @@ $('#invoke_background_js').click(e => {
 	bg.testBackground();
 });
 // 调用后台JS
-$('#putValue123').click(e => {
-    sendMessageToContentScript({cmd:'putValue123', value: 123}, function(response){});
+$('#putValue').click(e => {
+    sendMessageToContentScript({cmd:'putValue', value: 123}, function(response){});
 
 });
 // 调用后台JS
 $('#autoCall').click(e => {
-    sendMessageToContentScript({cmd:'autoCall', value: 15067111442}, function(response){});
+	var phoneNum = document.getElementById("phoneNum").value;
+    sendMessageToContentScript({cmd:'autoCall', value: phoneNum}, function(response){});
 
 });
+// 调用后台JS
+$('#stopCall').click(e => {
+    sendMessageToContentScript({cmd:'stopCall', value: ""}, function(response){});
 
+});
 
 // 获取后台页标题
 $('#get_background_title').click(e => {

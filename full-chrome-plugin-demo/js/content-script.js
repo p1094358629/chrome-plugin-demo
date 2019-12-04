@@ -1,5 +1,5 @@
 ﻿console.log('这是content script!');
-
+var circleInter;
 // 注意，必须设置了run_at=document_start 此段代码才会生效
 document.addEventListener('DOMContentLoaded', function () {
     // 注入自定义JS
@@ -90,17 +90,31 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         ele.innerHTML = `* {font-size: ${request.size}px !important;}`;
         document.head.appendChild(ele);
     }
-    else if (request.cmd == 'putValue123') {
+    else if (request.cmd == 'putValue') {
         const event = document.createEvent('HTMLEvents')
-        // alert("background->putValue123");
-        console.log("background->putValue123")
-        // document.getElementById("kw").setAttribute("value","123");
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").setAttribute("value", "78999")
+        event.initEvent('input', false, true)
+        // event.initEvent('span', false, true)
+
+        //eg input框赋值
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").value = "7890" //合同金额
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").dispatchEvent(event)
+        // span赋值
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[1]").setAttribute("style", "display:none")//贸易方式
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[2]").innerText = "货物"//贸易方式
+        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[2]").setAttribute("style", "")//贸易方式
+
     }
     else if (request.cmd == 'autoCall') {
-        doCircle()
-        setInterval(doCircle, 10000);
-
+        var phone = eval(request)
+        phoneNum = phone.value;
+        var arrStr = phoneNum.split("");
+        doCircle(arrStr);
+        circleInter = setInterval(function(){
+            doCircle(arrStr);
+        }, 10000);
+    }
+    else if (request.cmd == 'stopCall') {
+        clearInterval(circleInter)
     }
     else {
         tip(JSON.stringify(request));
@@ -108,23 +122,46 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-function doCircle() {
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div/div[1]/div[4]/div/div/div/div/button").click();
-    // var phone = findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[1]/div[3]/div/div/div/div/input");
-    // phone.focus();
-    // phone.value = "15067111442";
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[1]").click();//1
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[2]").click();//5
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[4]/button[2]").click();//0
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[3]").click();//6
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[3]/button[1]").click();//7
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[1]").click();//1
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[1]").click();//1
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[1]").click();//1
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[1]").click();//4
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[1]").click();//4
-    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[2]").click();//2
+function doCircle(arr) {
+    //先点击键盘
+    findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div/div[1]/div[4]/div/div/div/div/button").click()
+
+    //暂只支持11位国内号码
+    for (let i = 0; i < arr.length; i++) {
+        console.log("分解出的号码iter",arr[i])
+        var xpathResult = findXpath(arr[i]);
+        findElementByXPath(xpathResult).click();
+    }
+    // 1s 过后执行拨打电话动作
     setTimeout(doCall, 1000);
+}
+
+function findXpath(i) {
+    console.log("号码分解",i)
+    switch (i) {
+        case "0":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[4]/button[2]";
+        case "1":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[1]";
+        case "2":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[2]";
+        case "3":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[1]/button[3]";
+        case "4":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[1]";
+        case "5":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[2]";
+        case "6":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/button[3]";
+        case "7":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[3]/button[1]";
+        case "8":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[3]/button[2]";
+        case "9":
+            return "/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[1]/div[3]/button[3]";
+        default:
+            return ""
+    }
 }
 
 function doCall() {
