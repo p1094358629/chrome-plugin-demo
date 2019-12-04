@@ -1,5 +1,8 @@
 ﻿console.log('这是content script!');
+// 定时器变量
 var circleInter;
+// 间隔时间变量
+var interValSec;
 // 注意，必须设置了run_at=document_start 此段代码才会生效
 document.addEventListener('DOMContentLoaded', function () {
     // 注入自定义JS
@@ -90,28 +93,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         ele.innerHTML = `* {font-size: ${request.size}px !important;}`;
         document.head.appendChild(ele);
     }
-    else if (request.cmd == 'putValue') {
-        const event = document.createEvent('HTMLEvents')
-        event.initEvent('input', false, true)
-        // event.initEvent('span', false, true)
-
-        //eg input框赋值
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").value = "7890" //合同金额
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[5]/div/div/input").dispatchEvent(event)
-        // span赋值
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[1]").setAttribute("style", "display:none")//贸易方式
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[2]").innerText = "货物"//贸易方式
-        findElementByXPath("//*[@id=\"div1\"]/div[1]/div[1]/form/div[2]/div/div/div[1]/span[2]").setAttribute("style", "")//贸易方式
-
-    }
     else if (request.cmd == 'autoCall') {
-        var phone = eval(request)
-        phoneNum = phone.value;
+        var req = eval(request)
+        phoneNum = req.phoneNum_key;
+        interValSec = req.interValSec_key;
         var arrStr = phoneNum.split("");
         doCircle(arrStr);
         circleInter = setInterval(function(){
             doCircle(arrStr);
-        }, 10000);
+        }, interValSec*1000);
     }
     else if (request.cmd == 'stopCall') {
         clearInterval(circleInter)
@@ -166,7 +156,7 @@ function findXpath(i) {
 
 function doCall() {
     findElementByXPath("/html/body/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[3]/div/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/button").click();
-    setTimeout(doDeny, 7000)
+    setTimeout(doDeny, interValSec*1000-3000)
 }
 
 function doDeny() {
@@ -187,19 +177,6 @@ function sendMessageToBackground(message) {
         tip('收到来自后台的回复：' + response);
     });
 }
-
-// 监听长连接
-chrome.runtime.onConnect.addListener(function (port) {
-    console.log(port);
-    if (port.name == 'test-connect') {
-        port.onMessage.addListener(function (msg) {
-            console.log('收到长连接消息：', msg);
-            tip('收到长连接消息：' + JSON.stringify(msg));
-            if (msg.question == '你是谁啊？') port.postMessage({answer: '我是你爸！'});
-        });
-    }
-});
-
 window.addEventListener("message", function (e) {
     console.log('收到消息：', e.data);
     if (e.data && e.data.cmd == 'invoke') {
@@ -226,22 +203,3 @@ function initCustomEventListen() {
 }
 
 var tipCount = 0;
-
-// 简单的消息通知
-function tip(info) {
-    info = info || '';
-    var ele = document.createElement('div');
-    ele.className = 'chrome-plugin-simple-tip slideInLeft';
-    ele.style.top = tipCount * 70 + 20 + 'px';
-    ele.innerHTML = `<div>${info}</div>`;
-    document.body.appendChild(ele);
-    ele.classList.add('animated');
-    tipCount++;
-    setTimeout(() => {
-        ele.style.top = '-100px';
-        setTimeout(() => {
-            ele.remove();
-            tipCount--;
-        }, 400);
-    }, 3000);
-}
